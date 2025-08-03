@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
   M.Modal.init(document.querySelectorAll('.modal'));
   M.FormSelect.init(document.querySelectorAll('select'));
   M.Sidenav.init(document.querySelectorAll('.sidenav'));
+
   // Initialize charts
-
-
   initializeCharts();
 
   // Load history
@@ -53,12 +52,10 @@ function saveWeights() {
 
   // Calculate weights (AHP)
   const weights = calculateAHPWeights(matrix);
-  const sum = weights.reduce((a, b) => a + b, 0);
-  const normalizedWeights = weights.map(w => w / sum);
 
-  // Save to localStorage
-  localStorage.setItem('categoryWeights', JSON.stringify(normalizedWeights));
-  M.toast({html: `Веса сохранены: ${normalizedWeights.map((w, i) => `${categoryLabels[categories[i]]}: ${w.toFixed(2)}`).join(', ')}`});
+  // Save to localStorage (no normalization)
+  localStorage.setItem('categoryWeights', JSON.stringify(weights));
+  M.toast({html: `Веса сохранены: ${weights.map((w, i) => `${categoryLabels[categories[i]]}: ${w.toFixed(2)}`).join(', ')}`});
 }
 
 // AHP weight calculation
@@ -81,8 +78,8 @@ function saveRating(isModal = false) {
   const form = isModal ? document.getElementById('modalRatingForm') : document.getElementById('ratingForm');
   const date = form.querySelector(`#${isModal ? 'modal' : 'rating'}_date`).value;
   const ratings = {};
-  let total = 0;
-  let count = 0;
+  let weightedSum = 0;
+  let weightSum = 0;
   const weights = JSON.parse(localStorage.getItem('categoryWeights')) || Array(categories.length).fill(1 / categories.length);
 
   categories.forEach((cat, i) => {
@@ -91,30 +88,32 @@ function saveRating(isModal = false) {
       const value = parseInt(input.value) || 0;
       ratings[cat] = value;
       if (value > 0) {
-        total += value * weights[i];
-        count++;
+        weightedSum += value * weights[i];
+        weightSum += weights[i];
       }
     } else {
       ratings[cat] = null;
     }
   });
 
-  if (!date || count === 0) {
+  if (!date || weightSum === 0) {
     M.toast({html: 'Заполните дату и хотя бы одну оценку!'});
     return;
   }
 
-  const overall = count > 0 ? (total / count).toFixed(1) : 0;
+  const overall = weightSum > 0 ? (weightedSum / weightSum).toFixed(1) : 0;
   const ratingData = { date, ratings, overall };
 
   // Save to localStorage
-  const history = JSON.parse(localStorage.getItem('ratingHistory')) || [];
+  let history = JSON.parse(localStorage.getItem('ratingHistory')) || [];
   const existingIndex = history.findIndex(item => item.date === date);
   if (existingIndex >= 0) {
     history[existingIndex] = ratingData;
   } else {
     history.push(ratingData);
   }
+  // Sort history by date to ensure chronological order
+  history.sort((a, b) => new Date(a.date) - new Date(b.date));
   localStorage.setItem('ratingHistory', JSON.stringify(history));
 
   M.toast({html: 'Оценка сохранена!'});
@@ -130,7 +129,7 @@ function loadHistory() {
   const tbody = document.getElementById('historyTable');
   tbody.innerHTML = '';
 
-  history.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(item => {
+  history.forEach(item => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${item.date}</td>
@@ -219,6 +218,7 @@ function updateChartDisplay() {
   }
   charts.history.update();
 }
+
 // Forecast using TensorFlow.js
 async function makeForecast() {
   const history = JSON.parse(localStorage.getItem('ratingHistory')) || [];
