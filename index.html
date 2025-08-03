@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KnowTomorrow</title>
+   <link rel="shortcut icon" href="images//Logo1.ico" type="image/x-icon"> 
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- TensorFlow.js for forecasting -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+     <div class="header-container">
+      <img  style="width:140px;" src="images/Logo.png" alt="Logo"/>
+ <h3 class="center-align teal-text">KnowTomorrow</h3>
+     </div>
+   
+
+   <!-- Category Selection -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Выбор категорий</span>
+        <form id="categoryForm">
+          <p><label><input type="checkbox" checked="checked" id="cat_wellbeing" /><span>Самочувствие</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_home" /><span>Отношение дома</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_work" /><span>Отношение на работе</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_street" /><span>Отношение на улице</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_weather" /><span>Погода</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_inanimate" /><span>Неживая природа</span></label></p>
+          <p><label><input type="checkbox" checked="checked" id="cat_living" /><span>Живая природа</span></label></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Category Weights -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Настройка весов категорий</span>
+        <p>Сумма весов должна равняться 1</p>
+        <div class="weights-table-container">
+          <table class="striped" id="pairwiseTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Самочувствие</th>
+                <th>Отношение дома</th>
+                <th>Отношение на работе</th>
+                <th>Отношение на улице</th>
+                <th>Погода</th>
+                <th>Неживая природа</th>
+                <th>Живая природа</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Самочувствие</td><td>1</td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Отношение дома</td><td></td><td>1</td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Отношение на работе</td><td></td><td></td><td>1</td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Отношение на улице</td><td></td><td></td><td></td><td>1</td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Погода</td><td></td><td></td><td></td><td></td><td>1</td><td><input type="number" step="0.1" min="0"></td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Неживая природа</td><td></td><td></td><td></td><td></td><td></td><td>1</td><td><input type="number" step="0.1" min="0"></td></tr>
+              <tr><td>Живая природа</td><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn waves-effect waves-light teal" type="button" onclick="saveWeights()">Сохранить веса</button>
+      </div>
+    </div>
+
+    <!-- Daily Rating -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Оценка дня</span>
+        <form id="ratingForm">
+          <div class="input-field">
+            <input type="date" id="rating_date" required>
+            <label for="rating_date">Дата</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_wellbeing" min="1" max="10">
+            <label for="rating_wellbeing">Самочувствие (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_home" min="1" max="10">
+            <label for="rating_home">Отношение дома (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_work" min="1" max="10">
+            <label for="rating_work">Отношение на работе (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_street" min="1" max="10">
+            <label for="rating_street">Отношение на улице (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_weather" min="1" max="10">
+            <label for="rating_weather">Погода (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_inanimate" min="1" max="10">
+            <label for="rating_inanimate">Неживая природа (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="rating_living" min="1" max="10">
+            <label for="rating_living">Живая природа (1-10)</label>
+          </div>
+          <button class="btn waves-effect waves-light teal" type="submit">Сохранить</button>
+          <button class="btn-flat" type="button" onclick="document.getElementById('ratingForm').reset()">Отмена</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Статистика</span>
+        <div class="row">
+          <div class="col s12">
+            <ul class="tabs">
+              <li class="tab col s4"><a class="active" href="#history">История</a></li>
+              <li class="tab col s4"><a href="#analysis">Анализ</a></li>
+              <li class="tab col s4"><a href="#forecast">Прогноз</a></li>
+            </ul>
+          </div>
+          <div id="history" class="col s12">
+            <div class="input-field col s12 m6">
+              <select id="chartSelector" onchange="updateChartDisplay()">
+                <option value="overall" selected>Общая оценка</option>
+                <option value="wellbeing">Самочувствие</option>
+                <option value="home">Отношение дома</option>
+                <option value="work">Отношение на работе</option>
+                <option value="street">Отношение на улице</option>
+                <option value="weather">Погода</option>
+                <option value="inanimate">Неживая природа</option>
+                <option value="living">Живая природа</option>
+              </select>
+              <label>Выберите график</label>
+            </div>
+            <div class="chart-container"><canvas id="historyChart"></canvas></div>
+          </div>
+          <div id="analysis" class="col s12">
+            <div class="chart-container"><canvas id="radarChart"></canvas></div>
+          </div>
+          <div id="forecast" class="col s12">
+            <p>На основе ваших предыдущих оценок система может предсказать оценку следующего дня.</p>
+            <button class="btn waves-effect waves-light teal" type="button" onclick="makeForecast()">Сделать прогноз</button>
+            <div id="forecastResult" style="display: none;">
+              <h6>Прогноз:</h6>
+              <p id="forecastText">Идет анализ данных...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">История оценок</span>
+        <button class="btn waves-effect waves-light teal" data-target="addRatingModal">Добавить пропущенный день</button>
+        <div class="history-table-container">
+          <table class="striped">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Оценка</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="historyTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Adding Rating -->
+    <div id="addRatingModal" class="modal">
+      <div class="modal-content">
+        <h4>Добавить оценку</h4>
+        <form id="modalRatingForm">
+          <div class="input-field">
+            <input type="date" id="modal_date" required>
+            <label for="modal_date">Выберите дату</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_wellbeing" min="1" max="10">
+            <label for="modal_wellbeing">Самочувствие (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_home" min="1" max="10">
+            <label for="modal_home">Отношение дома (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_work" min="1" max="10">
+            <label for="modal_work">Отношение на работе (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_street" min="1" max="10">
+            <label for="modal_street">Отношение на улице (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_weather" min="1" max="10">
+            <label for="modal_weather">Погода (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_inanimate" min="1" max="10">
+            <label for="modal_inanimate">Неживая природа (1-10)</label>
+          </div>
+          <div class="input-field">
+            <input type="number" id="modal_living" min="1" max="10">
+            <label for="modal_living">Живая природа (1-10)</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-flat modal-close">Отмена</button>
+        <button class="btn waves-effect waves-light teal modal-close" type="button" onclick="saveRating()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Application Logic -->
+  <script src="main.js"></script>
+</body>
+</html>

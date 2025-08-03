@@ -1,0 +1,104 @@
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Roboto', sans-serif;
+    }
+    .container {
+      margin-top: 20px;
+      padding: 0 10px;
+    }
+    .header-container{
+      display: flex;
+      justify-content: center;
+      align-items: space-between;
+      
+    }
+    .header-container h3{
+      align-self:baseline;
+     
+    }
+    
+    .card {
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .tabs .tab a {
+      color: #26a69a;
+    }
+    .tabs .tab a:hover, .tabs .tab a.active {
+      color: #00796b;
+    }
+    .history-table-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+    .modal {
+      max-width: 600px;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .chart-container {
+      margin: 20px 0;
+      opacity: 0;
+      animation: chartFadeIn 0.5s ease forwards;
+    }
+    @keyframes chartFadeIn {
+      to { opacity: 1; }
+    }
+    /* Adaptive table for weights */
+    .weights-table-container {
+      overflow-x: auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    #pairwiseTable {
+      min-width: 700px; /* Ensure table is wide enough */
+    }
+    #pairwiseTable th, #pairwiseTable td {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+    #pairwiseTable input {
+      width: 60px;
+      margin: 0;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 0 5px;
+      }
+      .header-container img{
+      max-width: 90px;
+      max-height: 80px;
+    }
+      .card-title {
+        font-size: 1.2rem;
+      }
+      .btn {
+        font-size: 0.9rem;
+        padding: 0 1rem;
+      }
+      #pairwiseTable th, #pairwiseTable td {
+        font-size: 0.7rem;
+        padding: 4px;
+      }
+      #pairwiseTable input {
+        width: 40px;
+        font-size: 0.7rem;
+      }
+      .weights-table-container::-webkit-scrollbar {
+        height: 8px;
+      }
+      .weights-table-container::-webkit-scrollbar-thumb {
+        background-color: #26a69a;
+        border-radius: 4px;
+      }
+    }
