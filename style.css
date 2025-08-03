@@ -7,20 +7,32 @@
       padding: 0 10px;
     }
     .header-container{
+       display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 20px;
+      
+    }
+    .logo-block{
       display: flex;
       justify-content: center;
       align-items: center;
       
     }
-    .header-container h3{
+    .logo-block h3{
       align-self:baseline;
      
     }
-    .header-container img{
+    .logo-block img{
       max-width: 100px;
      
     }
-    
+    .waves-effect{
+     color: #264e40;
+    }
+    svg{
+      cursor: pointer;
+    }
     .card {
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -79,21 +91,31 @@
       .container {
         padding: 0 5px;
       }
-      .header-container h3{
-      font-size: 30px;
+      .logo-block h3{
+      font-size: 20px;
            
     }
-    .header-container h3::first-letter{
-      font-size: 40px;
+    .logo-block h3::first-letter{
+      font-size: 30px;
       font-weight: 500;
     }
-    .header-container h3 .T{
-      font-size: 40px;
+    .logo-block h3 .T{
+      font-size: 30px;
       font-weight: 500;
     }
-      .header-container img{
+      .logo-block img{
       max-width: 90px;
       max-height: 80px;
+    }
+    .header-container{
+       padding-right: 7px;
+     
+    }
+    svg{
+         
+      width: 24px;
+      height: 24px;
+           
     }
       .card-title {
         font-size: 1.2rem;
@@ -116,5 +138,12 @@
       .weights-table-container::-webkit-scrollbar-thumb {
         background-color: #26a69a;
         border-radius: 4px;
+      }
+      .tabs .tab a{
+        font-size: 10px;
+        
+      }
+      .modal-content{
+        font-size: 12px;
       }
     }

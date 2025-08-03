@@ -17,8 +17,69 @@
   <div class="container">
     <!-- Header -->
      <div class="header-container">
-      <img src="images/Logo.png" alt="Logo"/>
- <h3 class="center-align teal-text">Know<span class="T">T</span>omorrow</h3>
+       <div class="logo-block"><img src="images/Logo.png" alt="Logo"/>
+ <h3 class="center-align teal-text">Know<span class="T">T</span>omorrow</h3></div>
+
+ <!-- modal -->
+ <!-- Modal Trigger -->
+  <a class="waves-effect waves-light modal-trigger" href="#modal1">
+     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-grid" viewBox="0 0 16 16">
+  <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
+</svg>
+  </a>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Информация</h4>
+     <!--  -->
+       <ul id="tabs-swipe-demo" class="tabs">
+    <li class="tab col s3"><a class="active" href="#test-swipe-1">О продукте</a></li>
+    <li class="tab col s3"><a  href="#test-swipe-2">Инструкция</a></li>
+    <li class="tab col s3"><a href="#test-swipe-3">Контакты</a></li>
+  </ul>
+  <div id="test-swipe-1" class="col s12">
+    <div id="about">
+          <p class="modal-content">KnowTomorrow — это приложение для ежедневного отслеживания вашего настроения и окружающей среды. Оценивайте свой день по категориям, анализируйте данные и получайте прогнозы для улучшения качества жизни.</p>
+        </div>
+  </div>
+  <div id="test-swipe-2" class="col s12">
+        <div id="instructions">
+          <p class="modal-content">Добро пожаловать в KnowTomorrow! Следуйте этим шагам, чтобы начать использовать приложение:</p>
+          <ol>
+            <li><strong>Выбор категорий:</strong> В разделе "Выбор категорий" отметьте категории, которые вы хотите оценивать ежедневно (например, Самочувствие, Погода и т.д.).</li>
+            <li><strong>Настройка весов:</strong> В разделе "Настройка весов категорий" заполните таблицу парного сравнения, чтобы определить важность каждой категории. Сумма весов должна быть равна 1. Нажмите "Сохранить веса".</li>
+            <li><strong>Оценка дня:</strong> В разделе "Оценка дня" выберите дату и оцените выбранные категории по шкале от 1 до 10. Нажмите "Сохранить".</li>
+            <li><strong>История оценок:</strong> Просматривайте свои прошлые оценки в разделе "История оценок". Вы можете удалить записи или добавить оценки за пропущенные дни.</li>
+            <li><strong>Статистика:</strong> Перейдите во вкладку "Статистика" для просмотра графиков:
+              <ul>
+                <li><strong>История:</strong> Линейный график показывает изменения общей оценки или оценок по категориям.</li>
+                <li><strong>Анализ:</strong> Радарный график отображает средние оценки по всем категориям за весь период.</li>
+                <li><strong>Прогноз:</strong> На основе ваших данных система предсказывает оценки следующего дня. Нажмите "Сделать прогноз".</li>
+              </ul>
+            </li>
+            <li><strong>Добавить пропущенный день:</strong> Используйте модальное окно "Добавить оценку" для внесения оценок за прошлые дни.</li>
+          </ol>
+          <p>Если у вас есть вопросы или предложения, свяжитесь с нами через <a href="mailto:ghalut@mail.ru">ghalut@mail.ru</a>.</p>
+        </div>
+  </div>
+  <div id="test-swipe-3" class="col s12">
+      <div id="contacts">
+          <p class="modal-content">Свяжитесь с нами для получения дополнительной информации или с предложениями по улучшению приложения:</p>
+          <p><a href="mailto:ghalut@mail.ru">ghalut@mail.ru</a></p>
+        </div>
+  </div>
+      <!--  -->
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрыть</a>
+    </div>
+  </div>
+
+ <!-- end modal -->
+
+    
+           
      </div>
    
 
@@ -68,7 +129,7 @@
             </tbody>
           </table>
         </div>
-        <button class="btn waves-effect waves-light teal" type="button" onclick="saveWeights()">Сохранить веса</button>
+        <button class="btn waves-effect waves-light teal lighten-2" type="button" onclick="saveWeights()">Сохранить веса</button>
       </div>
     </div>
 
@@ -228,6 +289,8 @@
   <!-- Materialize JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- Application Logic -->
+  
   <script src="main.js"></script>
+  
 </body>
 </html>

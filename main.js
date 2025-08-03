@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
   M.Tabs.init(document.querySelectorAll('.tabs'));
   M.Modal.init(document.querySelectorAll('.modal'));
   M.FormSelect.init(document.querySelectorAll('select'));
-
+  M.Sidenav.init(document.querySelectorAll('.sidenav'));
   // Initialize charts
+
+
   initializeCharts();
 
   // Load history
