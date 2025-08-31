@@ -21,12 +21,12 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 15px;
 }
 
 .logo-block {
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
@@ -252,25 +252,53 @@ body {
     height: 28px;
   }
 }
+
 @media (max-width: 400px) {
-  .header-actions a svg {
-    width: 28px; /* Уменьшение ширины иконки */
-    height: 28px; /* Уменьшение высоты иконки */
-  }
-}
-@media (max-width: 375px) {
   .header-container {
+    flex-wrap: wrap;
+    justify-content: center;
     padding: 10px 5px;
   }
+  
+  .logo-block {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
   .header-actions {
-    gap: 10px;
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
+  
   .theme-switch {
-    transform: scale(0.7);
-    transform-origin: right;
+    order: 2;
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
   }
-  .header-actions a svg {
-    width: 32px;
-    height: 32px;
+  
+  .header-actions > a {
+    order: 1;
   }
+  
+  .theme-switch label {
+    display: flex;
+    align-items: center;
+  }
+  
+  .theme-switch label span {
+    margin-right: 8px;
+  }
+ 
+.switch {
+  
+  width: 150px;
+  align-self: flex-start;
+}
+
 }
