@@ -1,9 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize Materialize components
   M.Tabs.init(document.querySelectorAll('.tabs'));
-  M.Modal.init(document.querySelectorAll('.modal'));
+  M.Modal.init(document.querySelectorAll('.modal'), {
+    preventScrolling: false,
+    onOpenStart: function() {
+      document.body.style.overflow = 'hidden';
+    },
+    onCloseEnd: function() {
+      document.body.style.overflow = '';
+    }
+  });
   M.FormSelect.init(document.querySelectorAll('select'));
   M.Sidenav.init(document.querySelectorAll('.sidenav'));
+
+  // Initialize theme
+  initTheme();
+  
+  // Initialize accordion
+  initAccordion();
 
   // Initialize charts
   initializeCharts();
@@ -18,6 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('categoryForm').addEventListener('change', updateRatingForm);
+  
+  // Theme toggle
+  document.getElementById('themeToggle').addEventListener('change', toggleTheme);
 });
 
 // Categories
@@ -34,6 +51,43 @@ const categoryLabels = {
   inanimate: 'Неживая природа',
   living: 'Живая природа'
 };
+
+// Initialize theme
+function initTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  const isDark = localStorage.getItem('theme') === 'dark';
+  
+  themeToggle.checked = isDark;
+  if (isDark) {
+    document.body.setAttribute('data-theme', 'dark');
+  }
+}
+
+// Toggle theme
+function toggleTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  
+  if (themeToggle.checked) {
+    document.body.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light');
+  }
+}
+
+// Initialize accordion
+function initAccordion() {
+  if (window.innerWidth > 700) return;
+  
+  const accordions = document.querySelectorAll('.accordion');
+  accordions.forEach(accordion => {
+    const header = accordion.querySelector('.accordion-header');
+    header.addEventListener('click', () => {
+      accordion.classList.toggle('active');
+    });
+  });
+}
 
 // Save weights using AHP
 function saveWeights() {
@@ -110,10 +164,9 @@ function saveRating(isModal = false) {
   if (existingIndex >= 0) {
     history[existingIndex] = ratingData;
   } else {
-    history.push(ratingData);
+    // Add to beginning of array
+    history.unshift(ratingData);
   }
-  // Sort history by date to ensure chronological order
-  history.sort((a, b) => new Date(a.date) - new Date(b.date));
   localStorage.setItem('ratingHistory', JSON.stringify(history));
 
   M.toast({html: 'Оценка сохранена!'});
@@ -129,16 +182,45 @@ function loadHistory() {
   const tbody = document.getElementById('historyTable');
   tbody.innerHTML = '';
 
+  // Sort by date descending (newest first)
+  history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
   history.forEach(item => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${item.date}</td>
       <td>${item.overall}</td>
       <td>${item.overall > 7 ? 'Хорошо' : item.overall > 4 ? 'Нормально' : 'Плохо'}</td>
-      <td><a href="#" class="btn-flat" onclick="deleteRating('${item.date}')">Удалить</a></td>
+      <td>
+        <a href="#" class="btn-flat" onclick="editRating('${item.date}')">
+          <i class="material-icons">edit</i>
+        </a>
+        <a href="#" class="btn-flat" onclick="deleteRating('${item.date}')">
+          <i class="material-icons">delete</i>
+        </a>
+      </td>
     `;
     tbody.appendChild(row);
   });
+}
+
+// Edit rating
+function editRating(date) {
+  const history = JSON.parse(localStorage.getItem('ratingHistory')) || [];
+  const rating = history.find(item => item.date === date);
+  
+  if (!rating) return;
+  
+  const modal = M.Modal.getInstance(document.getElementById('addRatingModal'));
+  const form = document.getElementById('modalRatingForm');
+  
+  form.querySelector('#modal_date').value = rating.date;
+  categories.forEach(cat => {
+    const input = form.querySelector(`#modal_${cat}`);
+    if (input) input.value = rating.ratings[cat] || '';
+  });
+  
+  modal.open();
 }
 
 // Delete rating
@@ -261,3 +343,8 @@ async function makeForecast() {
     ${categories.map((cat, i) => `${categoryLabels[cat]}: ${categoryPredictions[i]}`).join('<br>')}
   `;
 }
+
+// Handle window resize for accordion
+window.addEventListener('resize', function() {
+  initAccordion();
+});
