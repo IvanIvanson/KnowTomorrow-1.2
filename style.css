@@ -258,3 +258,19 @@ body {
     height: 28px; /* Уменьшение высоты иконки */
   }
 }
+@media (max-width: 375px) {
+  .header-container {
+    padding: 10px 5px;
+  }
+  .header-actions {
+    gap: 10px;
+  }
+  .theme-switch {
+    transform: scale(0.7);
+    transform-origin: right;
+  }
+  .header-actions a svg {
+    width: 32px;
+    height: 32px;
+  }
+}

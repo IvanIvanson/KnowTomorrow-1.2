@@ -219,7 +219,7 @@ function editRating(date) {
     const input = form.querySelector(`#modal_${cat}`);
     if (input) input.value = rating.ratings[cat] || '';
   });
-  
+  M.updateTextFields();
   modal.open();
 }
 
@@ -305,43 +305,83 @@ function updateChartDisplay() {
 async function makeForecast() {
   const history = JSON.parse(localStorage.getItem('ratingHistory')) || [];
   if (history.length < 3) {
-    M.toast({html: 'Недостаточно данных для прогноза!'});
+    M.toast({html: 'Недостаточно данных для прогноза! Нужно как минимум 3 оценки.'});
     return;
   }
 
   document.getElementById('forecastResult').style.display = 'block';
   document.getElementById('forecastText').innerText = 'Идет анализ данных...';
 
-  const x = history.map((_, i) => [i]);
-  const y = history.map(item => [parseFloat(item.overall)]);
+  try {
+    // Подготовка данных
+    const x = history.map((_, i) => i);
+    const y = history.map(item => parseFloat(item.overall));
+    
+    // Нормализация данных
+    const xMin = Math.min(...x);
+    const xMax = Math.max(...x);
+    const yMin = Math.min(...y);
+    const yMax = Math.max(...y);
+    
+    const xNormalized = x.map(val => (val - xMin) / (xMax - xMin));
+    const yNormalized = y.map(val => (val - yMin) / (yMax - yMin));
 
-  const model = tf.sequential();
-  model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-  model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
+    // Создание модели
+    const model = tf.sequential();
+    model.add(tf.layers.dense({
+      units: 10,
+      inputShape: [1],
+      activation: 'relu'
+    }));
+    model.add(tf.layers.dense({
+      units: 1,
+      activation: 'sigmoid'
+    }));
+    
+    model.compile({
+      optimizer: 'adam',
+      loss: 'meanSquaredError'
+    });
 
-  const xs = tf.tensor2d(x);
-  const ys = tf.tensor2d(y);
+    // Обучение модели
+    const xs = tf.tensor2d(xNormalized, [xNormalized.length, 1]);
+    const ys = tf.tensor2d(yNormalized, [yNormalized.length, 1]);
+    
+    await model.fit(xs, ys, {
+      epochs: 100,
+      callbacks: {
+        onEpochEnd: (epoch, logs) => {
+          console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+        }
+      }
+    });
 
-  await model.fit(xs, ys, { epochs: 100 });
+    // Прогноз
+    const nextX = (x.length - xMin) / (xMax - xMin);
+    const prediction = model.predict(tf.tensor2d([nextX], [1, 1]));
+    let predictedValue = (await prediction.data())[0];
+    
+    // Денормализация
+    predictedValue = predictedValue * (yMax - yMin) + yMin;
+    
+    // Ограничение диапазона
+    predictedValue = Math.max(1, Math.min(10, predictedValue)).toFixed(1);
 
-  const nextIndex = history.length;
-  const prediction = model.predict(tf.tensor2d([[nextIndex]]));
-  const predictedValue = (await prediction.data())[0].toFixed(1);
+    document.getElementById('forecastText').innerHTML = `
+      Прогноз общей оценки на следующий день: <strong>${predictedValue}</strong>
+    `;
 
-  const categoryPredictions = await Promise.all(categories.map(async cat => {
-    const yCat = history.map(item => [item.ratings[cat] || 0]);
-    const modelCat = tf.sequential();
-    modelCat.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-    modelCat.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
-    await modelCat.fit(xs, tf.tensor2d(yCat), { epochs: 100 });
-    const pred = modelCat.predict(tf.tensor2d([[nextIndex]]));
-    return (await pred.data())[0].toFixed(1);
-  }));
-
-  document.getElementById('forecastText').innerHTML = `
-    Прогноз общей оценки: ${predictedValue}<br>
-    ${categories.map((cat, i) => `${categoryLabels[cat]}: ${categoryPredictions[i]}`).join('<br>')}
-  `;
+    // Очистка памяти
+    xs.dispose();
+    ys.dispose();
+    prediction.dispose();
+    model.dispose();
+    
+  } catch (error) {
+    console.error('Ошибка прогноза:', error);
+    document.getElementById('forecastText').innerText = 
+      'Произошла ошибка при прогнозировании. Попробуйте снова.';
+  }
 }
 
 // Handle window resize for accordion
